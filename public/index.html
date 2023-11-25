@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensor Data Sender</title>
+    <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        button {
+            padding: 10%;
+            border-radius: 50%;
+            font-size: 100px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        #player1 {
+            background-color: red;
+            color: white;
+        }
+
+        #player2 {
+            background-color: blue;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <button id="player1" onclick="choosePlayer(1)">Player 1</button>
+    <button id="player2" onclick="choosePlayer(2)">Player 2</button>
+
+    <script>
+        const socket = io();
+        let playerNumber = null;
+
+        function sendDataToServer() {
+            if (playerNumber !== null && window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    const gyroData = {
+                        alpha: event.alpha,
+                        beta: event.beta,
+                        gamma: event.gamma,
+                        player: playerNumber
+                    };
+
+                    socket.emit('sensorData', gyroData);
+                });
+            } else {
+                console.log("Selecciona un jugador para comenzar.");
+            }
+        }
+
+        function choosePlayer(number) {
+            playerNumber = number;
+            setInterval(sendDataToServer, 1500);
+        }
+    </script>
+</body>
+</html>
+
+
